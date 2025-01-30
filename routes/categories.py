@@ -1,12 +1,10 @@
-from sqlalchemy import select
 from fastapi import APIRouter, HTTPException
 from models.models import categories
 from config.db import conn
-import base64
 
 category = APIRouter()
 
-@category.get("/categories")
+@category.get("/diajosac/api/categories")
 async def get_categories():
     query = categories.select()
     result = conn.execute(query).fetchall() 
@@ -22,7 +20,7 @@ async def get_categories():
     
     return {"categories": categories_list}
 
-@category.get("/categories/{idCategory}")
+@category.get("/diajosac/api/categories/{idCategory}")
 async def get_category(idCategory: int):
     query = categories.select().where(categories.c.idCategory == idCategory)
     result = conn.execute(query).fetchone()
