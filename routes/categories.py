@@ -7,7 +7,10 @@ category = APIRouter()
 @category.get("/diajosac/api/categories")
 async def get_categories():
     query = categories.select()
-    result = conn.execute(query).fetchall() 
+    result = conn.execute(query).fetchall()
+    
+    if result is None:
+        raise HTTPException(status_code=404, detail="Categories not found")
     
     categories_list = []
     for row in result:

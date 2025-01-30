@@ -9,6 +9,9 @@ async def get_brands():
     query = brands.select()
     result = conn.execute(query).fetchall()
 
+    if result is None:
+        raise HTTPException(status_code=404, detail="Brands not found")
+
     brands_list = []
     for row in result:
         brand_dict = {

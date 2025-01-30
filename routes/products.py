@@ -9,6 +9,9 @@ async def get_products():
     query = products.select()
     result = conn.execute(query).fetchall()
     
+    if result is None:
+        raise HTTPException(status_code=404, detail="Products not found")
+    
     products_list = []
     for row in result:
         product_dict = {
@@ -43,3 +46,72 @@ async def get_product(idProduct: int):
     }
     
     return {"product": product_dict}
+
+@product.get("/diajosac/api/products/{idBrand}")
+async def get_products_by_brand(idBrand: int):
+    query = products.select().where(products.c.idBrand == idBrand)
+    result = conn.execute(query).fetchall()
+    
+    if result is None:
+        raise HTTPException(status_code=404, detail="Products not found")
+    
+    products_list = []
+    for row in result:
+        product_dict = {
+            "idProduct": row[0],
+            "name": row[1],
+            "description": row[2],
+            "technical_sheet": row[3],
+            "image": row[4],
+            "idCategory": row[5],
+            "idBrand": row[6]
+        }
+        products_list.append(product_dict)
+    
+    return {"products": products_list}
+
+@product.get("/diajosac/api/products/{idCategory}")
+async def get_products_by_category(idCategory: int):
+    query = products.select().where(products.c.idCategory == idCategory)
+    result = conn.execute(query).fetchall()
+    
+    if result is None:
+        raise HTTPException(status_code=404, detail="Products not found")
+    
+    products_list = []
+    for row in result:
+        product_dict = {
+            "idProduct": row[0],
+            "name": row[1],
+            "description": row[2],
+            "technical_sheet": row[3],
+            "image": row[4],
+            "idCategory": row[5],
+            "idBrand": row[6]
+        }
+        products_list.append(product_dict)
+    
+    return {"products": products_list}
+
+@product.get("/diajosac/api/products/{idBrand}/{idCategory}")
+async def get_products_by_brand_and_category(idBrand: int, idCategory: int):
+    query = products.select().where(products.c.idBrand == idBrand).where(products.c.idCategory == idCategory)
+    result = conn.execute(query).fetchall()
+    
+    if result is None:
+        raise HTTPException(status_code=404, detail="Products not found")
+    
+    products_list = []
+    for row in result:
+        product_dict = {
+            "idProduct": row[0],
+            "name": row[1],
+            "description": row[2],
+            "technical_sheet": row[3],
+            "image": row[4],
+            "idCategory": row[5],
+            "idBrand": row[6]
+        }
+        products_list.append(product_dict)
+
+    return {"products": products_list}
