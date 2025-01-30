@@ -23,3 +23,18 @@ products = Table("products", meta,
                  Column("image", String(255)),  # URL de la imagen
                  Column("idCategory", Integer, ForeignKey("categories.idCategory")),
                  Column("idBrand", Integer, ForeignKey("brands.idBrand")))
+
+# Modelo de Caracteristicas
+characteristics = Table("characteristics", meta, 
+                        Column("idCharacteristic", Integer, primary_key=True), 
+                        Column("name", String(255)),
+                        Column("idProduct", Integer, ForeignKey("products.idProduct")))
+
+# Modelo de Formularios
+forms = Table("forms", meta, 
+              Column("idForm", Integer, primary_key=True), 
+              Column("name", String(255)),
+              Column("last_name", String(255)),
+              Column("email", String(255)),
+              Column("number", Integer),
+              Column("Description", Text))
