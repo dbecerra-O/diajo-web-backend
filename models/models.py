@@ -37,4 +37,4 @@ forms = Table("forms", meta,
               Column("last_name", String(255)),
               Column("email", String(255)),
               Column("number", Integer),
-              Column("Description", Text))
+              Column("description", Text))
