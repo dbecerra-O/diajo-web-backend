@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from models.models import characteristics
 from config.db import conn
+from schemas.characteristic import Characteristic
 
 characteristic = APIRouter()
 
-@characteristic.get("/diajosac/api/characteristics/{idProduct}")
+@characteristic.get("/diajosac/api/characteristics/{idProduct}", response_model=list[Characteristic])
 async def get_characteristics(idProduct: int):
     query = characteristics.select().where(characteristics.c.idProduct == idProduct)
     result = conn.execute(query).fetchall()

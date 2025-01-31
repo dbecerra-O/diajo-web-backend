@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from models.models import brands
 from config.db import conn
+from schemas.brand import Brand
 
 brand = APIRouter()
 
-@brand.get("/diajosac/api/brands")
+@brand.get("/diajosac/api/brands", response_model=list[Brand])
 async def get_brands():
     query = brands.select()
     result = conn.execute(query).fetchall()
@@ -23,7 +24,7 @@ async def get_brands():
 
     return {"brands": brands_list}
 
-@brand.get("/diajosac/api/brands/{idBrand}")
+@brand.get("/diajosac/api/brands/{idBrand}", response_model=Brand)
 async def get_brand(idBrand: int):
     query = brands.select().where(brands.c.idBrand == idBrand)
     result = conn.execute(query).fetchone()

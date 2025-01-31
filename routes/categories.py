@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from models.models import categories
 from config.db import conn
+from schemas.category import Category
 
 category = APIRouter()
 
-@category.get("/diajosac/api/categories")
+@category.get("/diajosac/api/categories", response_model=list[Category])
 async def get_categories():
     query = categories.select()
     result = conn.execute(query).fetchall()
@@ -23,7 +24,7 @@ async def get_categories():
     
     return {"categories": categories_list}
 
-@category.get("/diajosac/api/categories/{idCategory}")
+@category.get("/diajosac/api/categories/{idCategory}", response_model=Category)
 async def get_category(idCategory: int):
     query = categories.select().where(categories.c.idCategory == idCategory)
     result = conn.execute(query).fetchone()

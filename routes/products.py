@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException
 from models.models import products
 from config.db import conn
+from schemas.product import Product
 
 product = APIRouter()
 
-@product.get("/diajosac/api/products")
+@product.get("/diajosac/api/products", response_model=list[Product])
 async def get_products():
     query = products.select()
     result = conn.execute(query).fetchall()
@@ -27,7 +28,7 @@ async def get_products():
     
     return {"products": products_list}
             
-@product.get("/diajosac/api/products/{idProduct}")
+@product.get("/diajosac/api/products/{idProduct}", response_model=Product)
 async def get_product(idProduct: int):
     query = products.select().where(products.c.idProduct == idProduct)
     result = conn.execute(query).fetchone()
@@ -47,7 +48,7 @@ async def get_product(idProduct: int):
     
     return {"product": product_dict}
 
-@product.get("/diajosac/api/products/{idBrand}")
+@product.get("/diajosac/api/products/{idBrand}", response_model=list[Product])
 async def get_products_by_brand(idBrand: int):
     query = products.select().where(products.c.idBrand == idBrand)
     result = conn.execute(query).fetchall()
@@ -70,7 +71,7 @@ async def get_products_by_brand(idBrand: int):
     
     return {"products": products_list}
 
-@product.get("/diajosac/api/products/{idCategory}")
+@product.get("/diajosac/api/products/{idCategory}", response_model=list[Product])
 async def get_products_by_category(idCategory: int):
     query = products.select().where(products.c.idCategory == idCategory)
     result = conn.execute(query).fetchall()
@@ -93,7 +94,7 @@ async def get_products_by_category(idCategory: int):
     
     return {"products": products_list}
 
-@product.get("/diajosac/api/products/{idBrand}/{idCategory}")
+@product.get("/diajosac/api/products/{idBrand}/{idCategory}", response_model=list[Product])
 async def get_products_by_brand_and_category(idBrand: int, idCategory: int):
     query = products.select().where(products.c.idBrand == idBrand).where(products.c.idCategory == idCategory)
     result = conn.execute(query).fetchall()

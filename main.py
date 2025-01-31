@@ -6,6 +6,10 @@ from routes.characteristics import characteristic
 from routes.forms import form
 
 # Comando to execute the API: uvicorn main:app --reload
+# ----------------------
+# install dependencies:
+# pip install fastapi uvicorn sqlalchemy pymysql pydantic
+
 app = FastAPI()
 
 app.include_router(category)
