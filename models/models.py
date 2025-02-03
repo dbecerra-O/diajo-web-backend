@@ -1,5 +1,6 @@
 from sqlalchemy import Table, Column, ForeignKey
-from sqlalchemy.sql.sqltypes import Integer, String, Text
+from sqlalchemy.sql import func
+from sqlalchemy.sql.sqltypes import Integer, String, Text, DateTime
 from config.db import meta, engine
 
 # Modelo de Categorias
@@ -36,5 +37,6 @@ forms = Table("forms", meta,
               Column("name", String(255)),
               Column("last_name", String(255)),
               Column("email", String(255)),
-              Column("number", Integer),
-              Column("description", Text))
+              Column("phone", Integer),
+              Column("description", Text),
+              Column("created_at", DateTime, default=func.now()))

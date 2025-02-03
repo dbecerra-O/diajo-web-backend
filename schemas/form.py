@@ -1,18 +1,21 @@
+# schemas/form.py
 from pydantic import BaseModel
 from typing import Optional
+from datetime import datetime
 
 class FormBase(BaseModel):
     name: str
     last_name: str
     email: str
-    number: int
+    phone: int
     description: Optional[str] = None
 
 class FormCreate(FormBase):
-    pass  # Para crear, solo heredamos el modelo base
+    pass
 
 class Form(FormBase):
     idForm: int
+    created_at: Optional[datetime]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
