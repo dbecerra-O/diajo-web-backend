@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 from config.db import engine
 from models.models import forms
 from schemas.form import FormCreate, Form
@@ -11,8 +11,12 @@ from dotenv import load_dotenv
 form = APIRouter()
 load_dotenv() # Cargar variables de entorno del archivo .env
 
+async def send_email_task(form_dict):
+    # Enviar un correo con los datos del formulario
+    send_email("Nueva Solicitud", os.getenv("ADDRESS_SENDER"), form_dict)
+
 @form.post("/diajosac/api/forms", response_model=Form)
-async def create_form(form_data: FormCreate):
+async def create_form(form_data: FormCreate, background_tasks: BackgroundTasks):
     try:   
         # Insertar los datos del formulario en la base de datos
         query = insert(forms).values(**form_data.dict()) # Convierte el objeto en un diccionario
@@ -27,8 +31,8 @@ async def create_form(form_data: FormCreate):
                 select(forms).where(forms.c.idForm == new_form_id) # Buscar por el ID recien generado
             ).mappings().fetchone() # Obtener el resultado en formato diccionario
 
-        # Enviar un correo con los datos del formulario
-        send_email("Nueva Solicitud", os.getenv("ADDRESS_SENDER"), dict(form_result))
+        # Agregar la tarea de envio de correo en segundo plano
+        background_tasks.add_task(send_email_task, dict(form_result))
         
         # Devolver el formulario insertado con sus datos
         return Form(**form_result) # Convertir el diccionario en un objeto de respuesta
