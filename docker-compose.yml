@@ -1,9 +1,36 @@
-version: 3
-
 services:
   fastapi:
-    image: image-fastapi
-    build:
-    container_name: fastapi-application
+    build: .
+    container_name: mi-fastapi-app
     ports:
       - "8000:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - EMAIL_ADDRESS=${EMAIL_ADDRESS}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT=${SMTP_PORT}
+      - ADDRESS_SENDER=${ADDRESS_SENDER}
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: diajosac
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+
+networks:
+  app-network:
+    driver: bridge
