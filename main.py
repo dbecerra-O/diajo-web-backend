@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from routes.categories import category
 from routes.products import product
 from routes.brands import brand
@@ -11,6 +12,14 @@ from routes.forms import form
 # pip install fastapi uvicorn sqlalchemy pymysql pydantic
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(category)
 app.include_router(product)

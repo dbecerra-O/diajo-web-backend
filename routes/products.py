@@ -26,7 +26,7 @@ async def get_products():
         }
         products_list.append(product_dict)
     
-    return {"products": products_list}
+    return products_list
             
 @product.get("/diajosac/api/products/{idProduct}", response_model=Product)
 async def get_product(idProduct: int):
@@ -46,7 +46,7 @@ async def get_product(idProduct: int):
         "idBrand": result[6]
     }
     
-    return {"product": product_dict}
+    return product_dict
 
 @product.get("/diajosac/api/products/{idBrand}", response_model=list[Product])
 async def get_products_by_brand(idBrand: int):
@@ -69,7 +69,7 @@ async def get_products_by_brand(idBrand: int):
         }
         products_list.append(product_dict)
     
-    return {"products": products_list}
+    return products_list
 
 @product.get("/diajosac/api/products/{idCategory}", response_model=list[Product])
 async def get_products_by_category(idCategory: int):
@@ -92,7 +92,7 @@ async def get_products_by_category(idCategory: int):
         }
         products_list.append(product_dict)
     
-    return {"products": products_list}
+    return products_list
 
 @product.get("/diajosac/api/products/{idBrand}/{idCategory}", response_model=list[Product])
 async def get_products_by_brand_and_category(idBrand: int, idCategory: int):
@@ -115,4 +115,4 @@ async def get_products_by_brand_and_category(idBrand: int, idCategory: int):
         }
         products_list.append(product_dict)
 
-    return {"products": products_list}
+    return products_list

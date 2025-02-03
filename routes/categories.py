@@ -22,7 +22,7 @@ async def get_categories():
         }
         categories_list.append(category_dict)
     
-    return {"categories": categories_list}
+    return categories_list
 
 @category.get("/diajosac/api/categories/{idCategory}", response_model=Category)
 async def get_category(idCategory: int):
@@ -38,4 +38,4 @@ async def get_category(idCategory: int):
         "image": result[2]
     }
     
-    return {"category": category_dict}
+    return category_dict

@@ -22,4 +22,4 @@ async def get_characteristics(idProduct: int):
         }
         characteristics_list.append(characteristic_dict)
 
-    return {"characteristics": characteristics_list}
+    return characteristics_list

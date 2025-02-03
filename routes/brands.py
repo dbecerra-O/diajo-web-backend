@@ -22,7 +22,7 @@ async def get_brands():
         }
         brands_list.append(brand_dict)
 
-    return {"brands": brands_list}
+    return brands_list
 
 @brand.get("/diajosac/api/brands/{idBrand}", response_model=Brand)
 async def get_brand(idBrand: int):
@@ -38,4 +38,4 @@ async def get_brand(idBrand: int):
         "image": result[2]
     }
 
-    return {"brand": brand_dict}
+    return brand_dict
