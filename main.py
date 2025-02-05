@@ -6,12 +6,26 @@ from routes.brands import brand
 from routes.characteristics import characteristic
 from routes.forms import form
 
-# Comando to execute the API: uvicorn main:app --reload
-# ----------------------
+# Use venv: python -m venv venv
+# Activate venv: .\venv\Scripts\activate
 # install dependencies:
 # pip install -r .\requirements.txt
+# Comando to execute the API: uvicorn main:app --reload
+# Test API: 
+# Swagger UI: http://127.0.0.1:8000/docs
+# ReDoc: http://127.0.0.1:8000/redoc
+# ----------------------
+# Use Dockerfile: docker build -t diajosac-api .
+# Run the container: docker run -p 8000:8000 --name diajo-container --env-file .env diajosac-api
+# Test API: 
+# Swagger UI: http://localhost:8000/docs
+# ReDoc: http://localhost:8000/redoc
 
-app = FastAPI()
+app = FastAPI(
+    title="DIAJOSAC API",
+    description="DIAJOSAC API",
+    version="1.0.0",
+)
 
 app.add_middleware(
     CORSMiddleware,
