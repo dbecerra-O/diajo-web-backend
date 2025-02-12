@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
+from schemas.color import Color
 
 class ProductBase(BaseModel):
     name: str
@@ -11,6 +12,7 @@ class ProductBase(BaseModel):
 
 class Product(ProductBase):
     idProduct: int
+    colors: List[Color]
 
     class Config:
         from_attributes = True
