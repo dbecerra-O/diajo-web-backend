@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from models.models import products
 from config.db import conn
 from schemas.product import Product
@@ -6,12 +6,32 @@ from schemas.product import Product
 product = APIRouter()
 
 @product.get("/diajosac/api/products", response_model=list[Product])
-async def get_products():
+async def get_products(
+    brand: int = Query(None, alias="idBrand"), 
+    category: int = Query(None, alias="idCategory"),
+    name: str = Query(None, min_length=3)
+):
+    """
+    Endpoint para obtener productos con filtros opcionales:
+    - brand: Filtra por la marca (idBrand).
+    - category: Filtra por la categoría (idCategory).
+    - name: Filtra por el nombre del producto (busca parcialmente).
+    """
     query = products.select()
+    
+    if brand is not None:
+        query = query.where(products.c.idBrand == brand)
+    
+    if category is not None:
+        query = query.where(products.c.idCategory == category)
+    
+    if name:
+        query = query.where(products.c.name.ilike(f"%{name}%"))
+    
     result = conn.execute(query).fetchall()
     
-    if result is None:
-        raise HTTPException(status_code=404, detail="Products not found")
+    if not result:
+        raise HTTPException(status_code=404, detail="No se encontraron productos con esos filtros.")
     
     products_list = []
     for row in result:

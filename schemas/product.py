@@ -5,14 +5,13 @@ from schemas.color import Color
 class ProductBase(BaseModel):
     name: str
     description: Optional[str] = None
-    technical_sheet: Optional[str] = None  # URL de la hoja técnica
-    image: Optional[str] = None  # URL de la imagen
+    technical_sheet: Optional[str] = None
+    image: Optional[str] = None
     idCategory: int
     idBrand: int
 
 class Product(ProductBase):
     idProduct: int
-    colors: List[Color]
 
     class Config:
         from_attributes = True
