@@ -1,10 +1,13 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Optional
 
-class Color(BaseModel):
-    idColor: int
+class ColorBase(BaseModel):
     color_name: str
     image: Optional[str] = None
+    idProduct: int
+
+class Color(ColorBase):
+    idColor: int
 
     class Config:
         from_attributes = True

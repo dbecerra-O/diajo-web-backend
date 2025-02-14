@@ -12,11 +12,26 @@ form = APIRouter()
 load_dotenv() # Cargar variables de entorno del archivo .env
 
 async def send_email_task(form_dict):
-    # Enviar un correo con los datos del formulario
-    send_email("Nueva Solicitud", os.getenv("ADDRESS_SENDER"), form_dict)
+    """
+    Tarea en segundo plano para enviar un correo con los datos del formulario.
+    """
+    await send_email("Nueva Solicitud", os.getenv("ADDRESS_SENDER"), form_dict)
 
 @form.post("/diajosac/api/forms", response_model=Form)
 async def create_form(form_data: FormCreate, background_tasks: BackgroundTasks):
+    """
+    Crea un nuevo formulario y lo inserta en la base de datos.
+
+    Args:
+        form_data (FormCreate): Datos del formulario a crear.
+        background_tasks (BackgroundTasks): Tareas en segundo plano.
+
+    Returns:
+        Form: El formulario creado.
+
+    Raises:
+        HTTPException: Si ocurre un error al insertar el formulario o al enviar el correo.
+    """
     try:   
         # Insertar los datos del formulario en la base de datos
         query = insert(forms).values(**form_data.dict()) # Convierte el objeto en un diccionario

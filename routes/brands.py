@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+from sqlalchemy.future import select
 from models.models import brands
 from config.db import conn
 from schemas.brand import Brand
@@ -7,35 +8,54 @@ brand = APIRouter()
 
 @brand.get("/diajosac/api/brands", response_model=list[Brand])
 async def get_brands():
-    query = brands.select()
-    result = conn.execute(query).fetchall()
+    """
+    Obtiene una lista de todas las marcas.
 
-    if result is None:
+    Returns:
+        List[Brand]: Una lista de objetos Brand.
+
+    Raises:
+        HTTPException: Si no se encuentran marcas.
+    """
+    query = select(brands)
+    result = await conn.execute(query)
+    brands_list = result.fetchall()
+
+    if not brands_list:
         raise HTTPException(status_code=404, detail="Brands not found")
 
-    brands_list = []
-    for row in result:
-        brand_dict = {
-            "idBrand": row[0],
-            "name": row[1],
-            "image": row[2]
+    return [
+        {
+            "idBrand": row.idBrand,
+            "name": row.name,
+            "image": row.image
         }
-        brands_list.append(brand_dict)
-
-    return brands_list
+        for row in brands_list
+    ]
 
 @brand.get("/diajosac/api/brands/{idBrand}", response_model=Brand)
 async def get_brand(idBrand: int):
-    query = brands.select().where(brands.c.idBrand == idBrand)
-    result = conn.execute(query).fetchone()
+    """
+    Obtiene una marca específica por su ID.
 
-    if result is None:
+    Args:
+        idBrand (int): El ID de la marca a obtener.
+
+    Returns:
+        Brand: Un objeto Brand.
+
+    Raises:
+        HTTPException: Si no se encuentra la marca.
+    """
+    query = select(brands).where(brands.c.idBrand == idBrand)
+    result = await conn.execute(query)
+    brand_row = result.fetchone()
+
+    if brand_row is None:
         raise HTTPException(status_code=404, detail="Brand not found")
 
-    brand_dict = {
-        "idBrand": result[0],
-        "name": result[1],
-        "image": result[2]
+    return {
+        "idBrand": brand_row.idBrand,
+        "name": brand_row.name,
+        "image": brand_row.image
     }
-
-    return brand_dict

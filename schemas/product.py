@@ -1,6 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
-from schemas.color import Color
+from typing import Optional
 
 class ProductBase(BaseModel):
     name: str

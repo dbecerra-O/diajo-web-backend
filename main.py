@@ -24,10 +24,14 @@ from routes.colors import color
 
 app = FastAPI(
     title="DIAJOSAC API",
-    description="DIAJOSAC API",
+    description="API para la gestión de productos, categorías, marcas, características, formularios y colores.",
     version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json"
 )
 
+# Configuración de CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -36,6 +40,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Include Routers
 app.include_router(category)
 app.include_router(product)
 app.include_router(brand)
