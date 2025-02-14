@@ -48,7 +48,7 @@ async def get_category(idCategory: int):
         HTTPException: Si no se encuentra la categoría.
     """
     query = select(categories).where(categories.c.idCategory == idCategory)
-    result = await conn.execute(query)
+    result = conn.execute(query)
     category_row = result.fetchone()
 
     if category_row is None:

@@ -15,7 +15,7 @@ async def send_email_task(form_dict):
     """
     Tarea en segundo plano para enviar un correo con los datos del formulario.
     """
-    await send_email("Nueva Solicitud", os.getenv("ADDRESS_SENDER"), form_dict)
+    send_email("Nueva Solicitud", os.getenv("ADDRESS_SENDER"), form_dict)
 
 @form.post("/diajosac/api/forms", response_model=Form)
 async def create_form(form_data: FormCreate, background_tasks: BackgroundTasks):

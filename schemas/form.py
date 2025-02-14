@@ -7,7 +7,7 @@ class FormBase(BaseModel):
     name: str
     last_name: str
     email: str
-    phone: int
+    phone: str
     description: Optional[str] = None
 
 class FormCreate(FormBase):

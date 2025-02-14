@@ -48,7 +48,7 @@ async def get_brand(idBrand: int):
         HTTPException: Si no se encuentra la marca.
     """
     query = select(brands).where(brands.c.idBrand == idBrand)
-    result = await conn.execute(query)
+    result = conn.execute(query)
     brand_row = result.fetchone()
 
     if brand_row is None:
