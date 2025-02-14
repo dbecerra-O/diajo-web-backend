@@ -52,7 +52,7 @@ async def get_products(
     if name:
         query = query.where(products.c.name.ilike(f"%{name}%"))
 
-    result = await conn.execute(query)
+    result = conn.execute(query)
     products_list = result.fetchall()
 
     if not products_list:
@@ -66,7 +66,7 @@ async def get_product(idProduct: int):
     Endpoint para obtener un producto por su ID.
     """
     query = select(products).where(products.c.idProduct == idProduct)
-    result = await conn.execute(query)
+    result = conn.execute(query)
     product_row = result.fetchone()
 
     if product_row is None:
@@ -80,7 +80,7 @@ async def get_products_by_brand(idBrand: int):
     Endpoint para obtener productos por ID de marca.
     """
     query = select(products).where(products.c.idBrand == idBrand)
-    result = await conn.execute(query)
+    result = conn.execute(query)
     products_list = result.fetchall()
 
     if not products_list:
@@ -94,7 +94,7 @@ async def get_products_by_category(idCategory: int):
     Endpoint para obtener productos por ID de categoría.
     """
     query = select(products).where(products.c.idCategory == idCategory)
-    result = await conn.execute(query)
+    result = conn.execute(query)
     products_list = result.fetchall()
 
     if not products_list:
@@ -108,7 +108,7 @@ async def get_products_by_brand_and_category(idBrand: int, idCategory: int):
     Endpoint para obtener productos por ID de marca y categoría.
     """
     query = select(products).where(products.c.idBrand == idBrand, products.c.idCategory == idCategory)
-    result = await conn.execute(query)
+    result = conn.execute(query)
     products_list = result.fetchall()
 
     if not products_list:

@@ -18,7 +18,7 @@ async def get_brands():
         HTTPException: Si no se encuentran marcas.
     """
     query = select(brands)
-    result = await conn.execute(query)
+    result = conn.execute(query)
     brands_list = result.fetchall()
 
     if not brands_list:

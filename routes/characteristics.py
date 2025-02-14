@@ -21,7 +21,7 @@ async def get_characteristics(idProduct: int):
         HTTPException: Si no se encuentran características para el producto especificado.
     """
     query = select(characteristics).where(characteristics.c.idProduct == idProduct)
-    result = await conn.execute(query)
+    result = conn.execute(query)
     characteristics_list = result.fetchall()
 
     if not characteristics_list:

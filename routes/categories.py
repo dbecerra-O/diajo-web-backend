@@ -18,7 +18,7 @@ async def get_categories():
         HTTPException: Si no se encuentran categorías.
     """
     query = select(categories)
-    result = await conn.execute(query)
+    result = conn.execute(query)
     categories_list = result.fetchall()
 
     if not categories_list:

@@ -21,7 +21,7 @@ async def get_colors(idProduct: int):
         HTTPException: Si no se encuentran colores para el producto especificado.
     """
     query = select(colors).where(colors.c.idProduct == idProduct)
-    result = await conn.execute(query)
+    result = conn.execute(query)
     colors_list = result.fetchall()
 
     if not colors_list:
