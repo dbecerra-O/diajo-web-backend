@@ -1,22 +1,30 @@
 from sqlalchemy import create_engine, MetaData
+from sqlalchemy.exc import SQLAlchemyError
 import os
 from dotenv import load_dotenv
 
-# Cargar variables de entorno desde un archivo .env
+# Cargar variables de entorno del archivo .env
 load_dotenv()
 
-# Crear el motor de la base de datos utilizando la URL de la base de datos desde las variables de entorno
+# Configurar la conexión a la base de datos
 DATABASE_URL = os.getenv('DATABASE_URL')
-if not DATABASE_URL:
-    raise ValueError("La variable de entorno DATABASE_URL no está configurada.")
 
-engine = create_engine(DATABASE_URL, echo=True)  # echo=True para habilitar el registro de SQLAlchemy
+# Crear el motor de la base de datos con echo para depuración
+engine = create_engine(DATABASE_URL, echo=True)
 
 # Crear una instancia de MetaData
 meta = MetaData()
 
-# Función para obtener una conexión a la base de datos
-def get_db_connection():
+def get_connection():
+    """
+    Establece una conexión a la base de datos y la devuelve.
+
+    Returns:
+        Connection: Conexión a la base de datos.
+
+    Raises:
+        SQLAlchemyError: Si ocurre un error al conectar a la base de datos.
+    """
     try:
         conn = engine.connect()
         return conn
@@ -24,15 +32,11 @@ def get_db_connection():
         print(f"Error al conectar a la base de datos: {e}")
         raise
 
-# Ejemplo de uso de la conexión dentro de un contexto
-def example_usage():
-    try:
-        with get_db_connection() as conn:
-            # Realizar operaciones con la conexión
-            print("Conexión exitosa a la base de datos.")
-    except SQLAlchemyError as e:
-        print(f"Error durante la operación de la base de datos: {e}")
-
-# Llamar a la función de ejemplo para probar la conexión
+# Ejemplo de uso de la conexión
 if __name__ == "__main__":
-    example_usage()
+    try:
+        with get_connection() as conn:
+            # Aquí puedes ejecutar tus consultas
+            print("Conexión exitosa a la base de datos")
+    except SQLAlchemyError as e:
+        print(f"Error al manejar la conexión: {e}")
