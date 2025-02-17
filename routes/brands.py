@@ -1,13 +1,14 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.future import select
-from models.models import brands
-from config.db import conn
-from schemas.brand import Brand
+from config.db import get_session
+from schemas.brand import Brand as BrandSchema
+from models.models import Brand as BrandModel
+from sqlalchemy.orm import Session
 
 brand = APIRouter()
 
-@brand.get("/diajosac/api/brands", response_model=list[Brand])
-async def get_brands():
+@brand.get("/diajosac/api/brands", response_model=list[BrandSchema])
+async def get_brands(session: Session = Depends(get_session)):
     """
     Obtiene una lista de todas las marcas.
 
@@ -17,45 +18,11 @@ async def get_brands():
     Raises:
         HTTPException: Si no se encuentran marcas.
     """
-    query = select(brands)
-    result = conn.execute(query)
-    brands_list = result.fetchall()
+    query = select(BrandModel)
+    result = session.execute(query)
+    brands_list = result.scalars().all()
 
     if not brands_list:
         raise HTTPException(status_code=404, detail="Brands not found")
 
-    return [
-        {
-            "idBrand": row.idBrand,
-            "name": row.name,
-            "image": row.image
-        }
-        for row in brands_list
-    ]
-
-@brand.get("/diajosac/api/brands/{idBrand}", response_model=Brand)
-async def get_brand(idBrand: int):
-    """
-    Obtiene una marca específica por su ID.
-
-    Args:
-        idBrand (int): El ID de la marca a obtener.
-
-    Returns:
-        Brand: Un objeto Brand.
-
-    Raises:
-        HTTPException: Si no se encuentra la marca.
-    """
-    query = select(brands).where(brands.c.idBrand == idBrand)
-    result = conn.execute(query)
-    brand_row = result.fetchone()
-
-    if brand_row is None:
-        raise HTTPException(status_code=404, detail="Brand not found")
-
-    return {
-        "idBrand": brand_row.idBrand,
-        "name": brand_row.name,
-        "image": brand_row.image
-    }
+    return brands_list

@@ -1,39 +1,23 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
 from sqlalchemy.future import select
-from config.db import conn
+from fastapi_pagination import Page, add_pagination, Params
+from fastapi_pagination.ext.sqlalchemy import paginate
+from config.db import get_session
 from schemas.product import Product
-from models.models import products
+from models.models import ProductModel
+from sqlalchemy.orm import Session
+from config.exceptions import ProductNotFoundException
 
 product = APIRouter()
+add_pagination(product)
 
-def result_to_dict(result):
-    """
-    Convierte el resultado de una consulta en una lista de diccionarios.
-
-    Args:
-        result: El resultado de la consulta.
-
-    Returns:
-        List[dict]: Una lista de diccionarios representando los productos.
-    """
-    return [
-        {
-            "idProduct": row.idProduct,
-            "name": row.name,
-            "description": row.description,
-            "technical_sheet": row.technical_sheet,
-            "image": row.image,
-            "idCategory": row.idCategory,
-            "idBrand": row.idBrand
-        }
-        for row in result
-    ]
-
-@product.get("/diajosac/api/products", response_model=list[Product])
+@product.get("/diajosac/api/products", response_model=Page[Product])
 async def get_products(
     brand: int = Query(None, alias="idBrand"),
     category: int = Query(None, alias="idCategory"),
-    name: str = Query(None, min_length=3)
+    name: str = Query(None, min_length=3),  # Establecer un valor predeterminado para el tamaño de la página
+    params: Params = Depends(),
+    session: Session = Depends(get_session)
 ):
     """
     Endpoint para obtener productos con filtros opcionales:
@@ -41,77 +25,38 @@ async def get_products(
     - category: Filtra por la categoría (idCategory).
     - name: Filtra por el nombre del producto (busca parcialmente).
     """
-    query = select(products)
+    query = select(ProductModel)
 
     if brand is not None:
-        query = query.where(products.c.idBrand == brand)
+        query = query.where(ProductModel.idBrand == brand)
 
     if category is not None:
-        query = query.where(products.c.idCategory == category)
+        query = query.where(ProductModel.idCategory == category)
 
     if name:
-        query = query.where(products.c.name.ilike(f"%{name}%"))
+        query = query.where(ProductModel.name.ilike(f"%{name}%"))
 
-    result = conn.execute(query)
-    products_list = result.fetchall()
+    # Ejecutar la consulta y obtener los resultados
+    result = session.execute(query)
+    products = result.scalars().all()
 
-    if not products_list:
-        raise HTTPException(status_code=404, detail="No se encontraron productos con esos filtros.")
-
-    return result_to_dict(products_list)
+    # Si no se encuentran productos, lanzar la excepción personalizada
+    if not products:
+        raise ProductNotFoundException()
+    
+    # Usa paginate para paginar tu consulta
+    return paginate(session, query, params)
 
 @product.get("/diajosac/api/products/{idProduct}", response_model=Product)
-async def get_product(idProduct: int):
+async def get_product(idProduct: int, session: Session = Depends(get_session)):
     """
     Endpoint para obtener un producto por su ID.
     """
-    query = select(products).where(products.c.idProduct == idProduct)
-    result = conn.execute(query)
-    product_row = result.fetchone()
+    query = select(ProductModel).where(ProductModel.idProduct == idProduct)
+    result = session.execute(query)
+    product_row = result.scalars().first()
 
     if product_row is None:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    return result_to_dict([product_row])[0]
-
-@product.get("/diajosac/api/products/brand/{idBrand}", response_model=list[Product])
-async def get_products_by_brand(idBrand: int):
-    """
-    Endpoint para obtener productos por ID de marca.
-    """
-    query = select(products).where(products.c.idBrand == idBrand)
-    result = conn.execute(query)
-    products_list = result.fetchall()
-
-    if not products_list:
-        raise HTTPException(status_code=404, detail="Products not found")
-
-    return result_to_dict(products_list)
-
-@product.get("/diajosac/api/products/category/{idCategory}", response_model=list[Product])
-async def get_products_by_category(idCategory: int):
-    """
-    Endpoint para obtener productos por ID de categoría.
-    """
-    query = select(products).where(products.c.idCategory == idCategory)
-    result = conn.execute(query)
-    products_list = result.fetchall()
-
-    if not products_list:
-        raise HTTPException(status_code=404, detail="Products not found")
-
-    return result_to_dict(products_list)
-
-@product.get("/diajosac/api/products/brand/{idBrand}/category/{idCategory}", response_model=list[Product])
-async def get_products_by_brand_and_category(idBrand: int, idCategory: int):
-    """
-    Endpoint para obtener productos por ID de marca y categoría.
-    """
-    query = select(products).where(products.c.idBrand == idBrand, products.c.idCategory == idCategory)
-    result = conn.execute(query)
-    products_list = result.fetchall()
-
-    if not products_list:
-        raise HTTPException(status_code=404, detail="Products not found")
-
-    return result_to_dict(products_list)
+    return product_row
