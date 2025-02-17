@@ -6,6 +6,7 @@ from config.db import get_session
 from schemas.product import Product
 from models.models import ProductModel
 from sqlalchemy.orm import Session
+from config.exceptions import ProductNotFoundException
 
 product = APIRouter()
 add_pagination(product)
@@ -15,6 +16,7 @@ async def get_products(
     brand: int = Query(None, alias="idBrand"),
     category: int = Query(None, alias="idCategory"),
     name: str = Query(None, min_length=3),  # Establecer un valor predeterminado para el tamaño de la página
+    params: Params = Depends(),
     session: Session = Depends(get_session)
 ):
     """
@@ -34,6 +36,14 @@ async def get_products(
     if name:
         query = query.where(ProductModel.name.ilike(f"%{name}%"))
 
+    # Ejecutar la consulta y obtener los resultados
+    result = session.execute(query)
+    products = result.scalars().all()
+
+    # Si no se encuentran productos, lanzar la excepción personalizada
+    if not products:
+        raise ProductNotFoundException()
+    
     # Usa paginate para paginar tu consulta
     return paginate(session, query, params)
 
