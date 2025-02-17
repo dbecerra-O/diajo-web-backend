@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine, MetaData
+from sqlalchemy.orm import sessionmaker
 import os
 from dotenv import load_dotenv
 
@@ -9,13 +10,18 @@ load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 # Crear el motor de la base de datos utilizando la URL obtenida
-# El parámetro 'echo=True' es opcional y se utiliza para imprimir las consultas SQL en la consola, útil para depuración
 engine = create_engine(DATABASE_URL, echo=True)
 
 # Crear una instancia de MetaData
-# MetaData es una colección de tablas y sus esquemas asociados
 meta = MetaData()
 
-# Establecer una conexión a la base de datos utilizando el motor creado
-# Esta conexión se puede usar para ejecutar consultas y operaciones en la base de datos
-conn = engine.connect()
+# Configurar una fábrica de sesiones
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# Función para obtener una sesión
+def get_session():
+    session = SessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()

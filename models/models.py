@@ -1,52 +1,50 @@
-from sqlalchemy import Table, Column, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
-from sqlalchemy.sql.sqltypes import Integer, String, Text, DateTime
-from config.db import meta, engine
 
-# Modelo de Categorias
-categories = Table("categories", meta, 
-              Column("idCategory", Integer, primary_key=True), 
-              Column("name", String(255), nullable=False),
-              Column("image", String(255), nullable=False))
+Base = declarative_base()
 
-# Modelo de Marcas
-brands = Table("brands", meta, 
-               Column("idBrand", Integer, primary_key=True), 
-               Column("name", String(255), nullable=False),
-               Column("image", String(255), nullable=False))  # URL de la imagen
+class Category(Base):
+    __tablename__ = 'categories'
+    idCategory = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    image = Column(String(255), nullable=False)
 
-# Modelo de Productos
-products = Table("products", meta, 
-                 Column("idProduct", Integer, primary_key=True), 
-                 Column("name", String(255), nullable=False),
-                 Column("description", Text, nullable=False),
-                 Column("technical_sheet", String(255), nullable=False), # URL de la hoja técnica
-                 Column("image", String(255), nullable=False),  # URL de la imagen
-                 Column("idCategory", Integer, ForeignKey("categories.idCategory"), nullable=False),
-                 Column("idBrand", Integer, ForeignKey("brands.idBrand"), nullable=False))
+class Brand(Base):
+    __tablename__ = 'brands'
+    idBrand = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    image = Column(String(255), nullable=False)
 
-# Modelo de Caracteristicas
-characteristics = Table("characteristics", meta, 
-                        Column("idCharacteristic", Integer, primary_key=True), 
-                        Column("name", String(255), nullable=False),
-                        Column("idProduct", Integer, ForeignKey("products.idProduct"), nullable=False))
+class ProductModel(Base):
+    __tablename__ = 'products'
+    idProduct = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    description = Column(Text, nullable=False)
+    technical_sheet = Column(String(255), nullable=False)
+    image = Column(String(255), nullable=False)
+    idCategory = Column(Integer, ForeignKey('categories.idCategory'), nullable=False)
+    idBrand = Column(Integer, ForeignKey('brands.idBrand'), nullable=False)
 
-# Modelo de Formularios
-forms = Table("forms", meta, 
-              Column("idForm", Integer, primary_key=True), 
-              Column("name", String(255), nullable=False),
-              Column("last_name", String(255), nullable=False),
-              Column("email", String(255), nullable=False),
-              Column("phone", String(20), nullable=False),
-              Column("description", Text, nullable=False),
-              Column("created_at", DateTime, default=func.now(), nullable=False))
+class Characteristic(Base):
+    __tablename__ = 'characteristics'
+    idCharacteristic = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    idProduct = Column(Integer, ForeignKey('products.idProduct'), nullable=False)
 
-# Modelo de Colores
-colors = Table("colors", meta, 
-               Column("idColor", Integer, primary_key=True),
-               Column("color_name", String(255), nullable=False),
-               Column("image", String(255), nullable=False),
-               Column("idProduct", Integer, ForeignKey("products.idProduct"), nullable=False))
+class Form(Base):
+    __tablename__ = 'forms'
+    idForm = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=False)
+    last_name = Column(String(255), nullable=False)
+    email = Column(String(255), nullable=False)
+    phone = Column(String(20), nullable=False)
+    description = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=func.now(), nullable=False)
 
-# Crear todas las tablas en la base de datos
-meta.create_all(engine)
+class Color(Base):
+    __tablename__ = 'colors'
+    idColor = Column(Integer, primary_key=True, index=True)
+    color_name = Column(String(255), nullable=False)
+    image = Column(String(255), nullable=False)
+    idProduct = Column(Integer, ForeignKey('products.idProduct'), nullable=False)
