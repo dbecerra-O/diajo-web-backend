@@ -26,3 +26,17 @@ async def get_categories(session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="Categories not found")
 
     return categories_list
+
+@category.get("/diajosac/api/categories/{idCategory}", response_model=Category)
+async def get_category(idCategory: int, session: Session = Depends(get_session)):
+    """
+    Endpoint para obtener una categoría por su ID.
+    """
+    query = select(CategoryModel).where(CategoryModel.idCategory == idCategory)
+    result = session.execute(query)
+    category_row = result.scalars().first()
+
+    if category_row is None:
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    return category_row
