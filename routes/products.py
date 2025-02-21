@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy.future import select
+from typing import List, Optional
 from config.db import conn
 from schemas.product import Product
 from models.models import products
@@ -31,9 +32,9 @@ def result_to_dict(result):
 
 @product.get("/diajosac/api/products", response_model=list[Product])
 async def get_products(
-    brand: int = Query(None, alias="idBrand"),
-    category: int = Query(None, alias="idCategory"),
-    name: str = Query(None, min_length=3)
+    brand: Optional[List[int]] = Query(None, alias="idBrand"),
+    category: Optional[List[int]] = Query(None, alias="idCategory"),
+    name: Optional[str] = Query(None, min_length=3)
 ):
     """
     Endpoint para obtener productos con filtros opcionales:
@@ -43,11 +44,11 @@ async def get_products(
     """
     query = select(products)
 
-    if brand is not None:
-        query = query.where(products.c.idBrand == brand)
+    if brand:
+        query = query.where(products.c.idBrand.in_(brand))
 
-    if category is not None:
-        query = query.where(products.c.idCategory == category)
+    if category:
+        query = query.where(products.c.idCategory.in_(category))
 
     if name:
         query = query.where(products.c.name.ilike(f"%{name}%"))
