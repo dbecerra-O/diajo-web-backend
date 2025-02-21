@@ -3,6 +3,7 @@ from sqlalchemy.future import select
 from fastapi_pagination import Page, add_pagination, Params
 from fastapi_pagination.ext.sqlalchemy import paginate
 from config.db import get_session
+from typing import List, Optional
 from schemas.product import Product
 from models.models import ProductModel
 from sqlalchemy.orm import Session
@@ -13,9 +14,9 @@ add_pagination(product)
 
 @product.get("/diajosac/api/products", response_model=Page[Product])
 async def get_products(
-    brand: int = Query(None, alias="idBrand"),
-    category: int = Query(None, alias="idCategory"),
-    name: str = Query(None, min_length=3),  # Establecer un valor predeterminado para el tamaño de la página
+    brand: Optional[List[int]] = Query(None, alias="idBrand"),
+    category: Optional[List[int]] = Query(None, alias="idCategory"),
+    name: Optional[str] = Query(None, min_length=3),  # Establecer un valor predeterminado para el tamaño de la página
     params: Params = Depends(),
     session: Session = Depends(get_session)
 ):
@@ -27,11 +28,11 @@ async def get_products(
     """
     query = select(ProductModel)
 
-    if brand is not None:
-        query = query.where(ProductModel.idBrand == brand)
+    if brand:
+        query = query.where(ProductModel.idBrand.in_(brand))
 
-    if category is not None:
-        query = query.where(ProductModel.idCategory == category)
+    if category:
+        query = query.where(ProductModel.idCategory.in_(category))
 
     if name:
         query = query.where(ProductModel.name.ilike(f"%{name}%"))
