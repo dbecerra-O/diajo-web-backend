@@ -1,13 +1,14 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.future import select
-from config.db import conn
-from schemas.color import Color  # El esquema para colores
-from models.models import colors  # Modelos relacionados con colores
+from config.db import get_session
+from schemas.color import Color as ColorSchema
+from models.models import Color as ColorModel
+from sqlalchemy.orm import Session
 
 color = APIRouter()
 
-@color.get("/diajosac/api/colors/{idProduct}", response_model=list[Color])
-async def get_colors(idProduct: int):
+@color.get("/diajosac/api/colors/{idProduct}", response_model=list[ColorSchema])
+async def get_colors(idProduct: int, session: Session = Depends(get_session)):
     """
     Obtiene una lista de colores asociados a un producto específico.
 
@@ -20,19 +21,11 @@ async def get_colors(idProduct: int):
     Raises:
         HTTPException: Si no se encuentran colores para el producto especificado.
     """
-    query = select(colors).where(colors.c.idProduct == idProduct)
-    result = conn.execute(query)
-    colors_list = result.fetchall()
+    query = select(ColorModel).where(ColorModel.idProduct == idProduct)
+    result = session.execute(query)
+    colors_list = result.scalars().all()
 
     if not colors_list:
         raise HTTPException(status_code=404, detail="Colors not found for the specified product")
 
-    return [
-        {
-            "idColor": row.idColor,
-            "color_name": row.color_name,
-            "image": row.image,
-            "idProduct": row.idProduct
-        }
-        for row in colors_list
-    ]
+    return colors_list

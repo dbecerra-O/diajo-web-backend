@@ -1,13 +1,14 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.future import select
-from config.db import conn
-from models.models import characteristics
-from schemas.characteristic import Characteristic
+from config.db import get_session
+from schemas.characteristic import Characteristic as CharacteristicSchema
+from models.models import Characteristic as CharacteristicModel
+from sqlalchemy.orm import Session
 
 characteristic = APIRouter()
 
-@characteristic.get("/diajosac/api/characteristics/{idProduct}", response_model=list[Characteristic])
-async def get_characteristics(idProduct: int):
+@characteristic.get("/diajosac/api/characteristics/{idProduct}", response_model=list[CharacteristicSchema])
+async def get_characteristics(idProduct: int, session: Session = Depends(get_session)):
     """
     Endpoint para obtener características asociadas a un producto específico.
 
@@ -20,18 +21,11 @@ async def get_characteristics(idProduct: int):
     Raises:
         HTTPException: Si no se encuentran características para el producto especificado.
     """
-    query = select(characteristics).where(characteristics.c.idProduct == idProduct)
-    result = conn.execute(query)
-    characteristics_list = result.fetchall()
+    query = select(CharacteristicModel).where(CharacteristicModel.idProduct == idProduct)
+    result = session.execute(query)
+    characteristics_list = result.scalars().all()
 
     if not characteristics_list:
         raise HTTPException(status_code=404, detail="Characteristics not found for the specified product")
 
-    return [
-        {
-            "idCharacteristic": row.idCharacteristic,
-            "name": row.name,
-            "idProduct": row.idProduct
-        }
-        for row in characteristics_list
-    ]
+    return characteristics_list
