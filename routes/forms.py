@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 import os
 from dotenv import load_dotenv
 from config.filter import analyze_text
+import requests
 
 # Crear el enrutador para los endpoints relacionados con los formularios
 form = APIRouter()
@@ -40,10 +41,13 @@ async def create_form(form_data: FormCreate, background_tasks: BackgroundTasks, 
         for campo in campos_a_validar:
             valor = getattr(form_data, campo)
             if valor:  # Verificar que no esté vacío
-                score = analyze_text(valor)
-                print(f"Toxicity Score para {campo}: {score}")  # Para depuración
-                if score is not None and score > 0.6:  # Ajusta el umbral si es necesario
-                    raise HTTPException(status_code=400, detail=f"El contenido es inapropiado.")
+                try:
+                    score = analyze_text(valor)
+                    print(f"Toxicity Score para {campo}: {score}")  # Para depuración
+                    if score is not None and score > 0.6:  # Ajusta el umbral si es necesario
+                        raise HTTPException(status_code=400, detail=f"El contenido es inapropiado.")
+                except requests.exceptions.RequestException:
+                    raise HTTPException(status_code=503, detail="Servicio de análisis de texto no disponible.")
         # Insertar los datos del formulario en la base de datos
         new_form = FormModel(**form_data.dict())
         session.add(new_form)
