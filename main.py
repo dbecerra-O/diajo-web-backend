@@ -3,9 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes.categories import category
 from routes.products import product
 from routes.brands import brand
-from routes.characteristics import characteristic
 from routes.forms import form
-from routes.colors import color
 
 # Use venv: python -m venv venv
 # Activate venv: .\venv\Scripts\activate
@@ -44,6 +42,4 @@ app.add_middleware(
 app.include_router(category)
 app.include_router(product)
 app.include_router(brand)
-app.include_router(characteristic)
 app.include_router(form)
-app.include_router(color)

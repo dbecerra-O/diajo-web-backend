@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -26,10 +27,14 @@ class ProductModel(Base):
     idCategory = Column(Integer, ForeignKey('categories.idCategory'), nullable=False)
     idBrand = Column(Integer, ForeignKey('brands.idBrand'), nullable=False)
 
+    # Relación con colores y características
+    colors = relationship("Color", backref="product", lazy="selectin")
+    characteristics = relationship("Characteristic", backref="product", lazy="selectin")
+
 class Characteristic(Base):
     __tablename__ = 'characteristics'
     idCharacteristic = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255), nullable=False)
+    description = Column(String(255), nullable=False)
     idProduct = Column(Integer, ForeignKey('products.idProduct'), nullable=False)
 
 class Form(Base):
