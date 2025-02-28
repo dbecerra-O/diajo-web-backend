@@ -6,7 +6,7 @@ class BrandBase(BaseModel):
     image: Optional[str] = None  # URL opcional para la imagen
 
 class Brand(BrandBase):
-    idBrand: int
+    id: int
 
     class Config:
         from_attributes = True

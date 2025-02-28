@@ -32,7 +32,7 @@ async def get_brand(idBrand: int, session: Session = Depends(get_session)):
     """
     Endpoint para obtener una marca por su ID.
     """
-    query = select(BrandModel).where(BrandModel.idBrand == idBrand)
+    query = select(BrandModel).where(BrandModel.id == idBrand)
     result = session.execute(query)
     brand_row = result.scalars().first()
 

@@ -14,7 +14,7 @@ class FormCreate(FormBase):
     pass
 
 class Form(FormBase):
-    idForm: int
+    id: int
     created_at: Optional[datetime]
 
     class Config:

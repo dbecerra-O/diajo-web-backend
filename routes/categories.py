@@ -32,7 +32,7 @@ async def get_category(idCategory: int, session: Session = Depends(get_session))
     """
     Endpoint para obtener una categoría por su ID.
     """
-    query = select(CategoryModel).where(CategoryModel.idCategory == idCategory)
+    query = select(CategoryModel).where(CategoryModel.id == idCategory)
     result = session.execute(query)
     category_row = result.scalars().first()
 

@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import List
 
 class ColorSchema(BaseModel):
-    idColor: int
+    id: int
     color_name: str
     image: str
 
@@ -10,7 +10,7 @@ class ColorSchema(BaseModel):
         from_attributes = True
 
 class CharacteristicSchema(BaseModel):
-    idCharacteristic: int
+    id: int
     description: str
 
     class Config:
@@ -18,7 +18,7 @@ class CharacteristicSchema(BaseModel):
 
 class ProductSimple(BaseModel):
     """Esquema para `get_products`, sin colores ni características"""
-    idProduct: int
+    id: int
     name: str
     description: str
     technical_sheet: str

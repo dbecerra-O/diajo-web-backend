@@ -1,11 +1,12 @@
 from pydantic import BaseModel
 from typing import Optional
 
-class CategoryBase(BaseModel):
+class GuiaBase(BaseModel):
     name: str
-    image: Optional[str] = None  # URL opcional para la imagen
+    description: str
+    archive: Optional[str]
 
-class Category(CategoryBase):
+class Guia(GuiaBase):
     id: int
 
     class Config:

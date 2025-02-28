@@ -5,7 +5,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from config.db import get_session
 from typing import List, Optional
 from schemas.product import Product, ProductSimple
-from models.models import ProductModel
+from models.models import Product as ProductModel
 from sqlalchemy.orm import Session, selectinload
 
 product = APIRouter()

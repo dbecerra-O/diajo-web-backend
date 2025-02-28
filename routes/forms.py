@@ -19,6 +19,7 @@ async def send_email_task(form_dict):
     Tarea en segundo plano para enviar un correo con los datos del formulario.
     """
     send_email("Diajo Web Solicitud", os.getenv("ADDRESS_SENDER"), form_dict)
+    send_email("Diajo Web Solicitud", "diego.becerra@tecsup.edu.pe", form_dict)
 
 @form.post("/diajosac/api/forms", response_model=FormSchema)
 async def create_form(form_data: FormCreate, background_tasks: BackgroundTasks, session: Session = Depends(get_session)):
