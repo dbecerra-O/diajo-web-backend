@@ -19,7 +19,6 @@ async def send_email_task(form_dict):
     Tarea en segundo plano para enviar un correo con los datos del formulario.
     """
     send_email("Diajo Web Solicitud", os.getenv("ADDRESS_SENDER"), form_dict)
-    send_email("Diajo Web Solicitud", "diego.becerra@tecsup.edu.pe", form_dict)
 
 @form.post("/diajosac/api/forms", response_model=FormSchema)
 async def create_form(form_data: FormCreate, background_tasks: BackgroundTasks, session: Session = Depends(get_session)):
@@ -37,6 +36,10 @@ async def create_form(form_data: FormCreate, background_tasks: BackgroundTasks, 
         HTTPException: Si ocurre un error al insertar el formulario o al enviar el correo.
     """
     try:
+        # Verificar si el email termina en @diajosac.com
+        if form_data.email.endswith("@diajosac.com"):
+            raise HTTPException(status_code=400, detail="El correo no puede terminar en @diajosac.com.")
+        
         campos_a_validar = ["name", "last_name", "email", "phone", "description"]
 
         for campo in campos_a_validar:
